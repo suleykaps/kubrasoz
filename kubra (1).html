@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sana Bir Şey Sormak İstiyorum</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose: #c8536a;
+    --rose-light: #f2a0af;
+    --rose-pale: #fdf0f2;
+    --gold: #c49a3c;
+    --gold-light: #e8c96e;
+    --dark: #2a1a1f;
+    --cream: #fef9f5;
+    --text: #3d2530;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--cream);
+    font-family: 'Nunito', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* FLOATING PETALS */
+  .petal-container {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .petal {
+    position: absolute;
+    width: 10px; height: 14px;
+    border-radius: 150% 0 150% 0;
+    opacity: 0;
+    animation: fall linear infinite;
+  }
+  @keyframes fall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 0.7; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* PAGES */
+  .page {
+    display: none;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+    animation: fadeIn 0.8s ease forwards;
+  }
+  .page.active { display: flex; flex-direction: column; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── PAGE 0: INTRO ─── */
+  #page-intro {
+    background: linear-gradient(160deg, #2a1a1f 0%, #5c2636 50%, #8a3a52 100%);
+    justify-content: center; align-items: center; text-align: center;
+    padding: 40px 30px;
+  }
+  .heart-pulse {
+    font-size: 72px;
+    animation: pulse 1.6s ease-in-out infinite;
+    display: block; margin-bottom: 24px;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+  #page-intro h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 8vw, 42px);
+    color: #fff;
+    line-height: 1.3;
+    margin-bottom: 16px;
+  }
+  #page-intro h1 em {
+    font-style: italic;
+    color: var(--rose-light);
+  }
+  #page-intro p {
+    color: rgba(255,255,255,0.75);
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 340px;
+    margin: 0 auto 36px;
+  }
+
+  /* ─── PAGE 1: LETTER ─── */
+  #page-letter {
+    background: var(--cream);
+    padding: 50px 0 30px;
+    align-items: center;
+  }
+  .letter-wrap {
+    width: 92%; max-width: 440px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+    padding: 36px 28px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .letter-wrap::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 5px;
+    background: linear-gradient(90deg, var(--rose), var(--gold), var(--rose));
+  }
+  .letter-date {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+  .letter-body {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    line-height: 1.85;
+    color: var(--text);
+  }
+  .letter-body strong {
+    font-weight: 600; color: var(--rose);
+  }
+  .letter-sig {
+    margin-top: 28px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 20px;
+    color: var(--rose);
+    text-align: right;
+  }
+  .rose-divider {
+    text-align: center;
+    margin: 28px 0;
+    font-size: 22px;
+    letter-spacing: 8px;
+  }
+
+  /* ─── PAGE 2-4: COMMITMENTS ─── */
+  .commit-page {
+    background: var(--cream);
+    padding: 30px 20px 50px;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .step-indicator {
+    display: flex; gap: 10px; margin-bottom: 32px; margin-top: 10px;
+  }
+  .step-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #ddd; transition: background 0.4s;
+  }
+  .step-dot.done { background: var(--rose); }
+  .step-dot.active { background: var(--gold); transform: scale(1.3); }
+
+  .commit-card {
+    width: 100%; max-width: 420px;
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px 24px 28px;
+    box-shadow: 0 6px 32px rgba(0,0,0,0.08);
+    position: relative; overflow: hidden;
+  }
+  .commit-card::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--rose), var(--gold));
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.6s ease;
+  }
+  .commit-card.accepted::after { transform: scaleX(1); }
+
+  .commit-icon { font-size: 52px; margin-bottom: 16px; display: block; text-align: center; }
+  .commit-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    text-align: center;
+    color: var(--dark);
+    margin-bottom: 14px;
+  }
+  .commit-desc {
+    font-size: 15px;
+    line-height: 1.75;
+    color: #6a4050;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .commit-quote {
+    background: var(--rose-pale);
+    border-left: 3px solid var(--rose-light);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 16px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--rose);
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  /* PROMISE CHECKBOX */
+  .promise-box {
+    display: flex; align-items: center; gap: 12px;
+    background: #fafafa;
+    border: 2px solid #e8d5da;
+    border-radius: 14px;
+    padding: 16px;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s;
+    margin-bottom: 16px;
+    user-select: none;
+  }
+  .promise-box:active { transform: scale(0.98); }
+  .promise-box.checked {
+    border-color: var(--rose);
+    background: #fff5f7;
+  }
+  .cb-circle {
+    width: 28px; height: 28px; min-width: 28px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; transition: all 0.3s;
+    background: #fff;
+  }
+  .promise-box.checked .cb-circle {
+    background: var(--rose); border-color: var(--rose); color: #fff;
+  }
+  .promise-text {
+    font-size: 14px; font-weight: 600; color: var(--text);
+    line-height: 1.4;
+  }
+  .promise-box.checked .promise-text { color: var(--rose); }
+
+  /* OATH BUTTON */
+  .oath-btn {
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, var(--rose), #a03050);
+    color: #fff; border: none; border-radius: 14px;
+    font-family: 'Playfair Display', serif;
+    font-size: 18px; font-style: italic;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(200,83,106,0.4);
+    opacity: 0.4; pointer-events: none;
+    letter-spacing: 0.3px;
+  }
+  .oath-btn.ready {
+    opacity: 1; pointer-events: all;
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+  @keyframes glowPulse {
+    0%, 100% { box-shadow: 0 4px 20px rgba(200,83,106,0.4); }
+    50% { box-shadow: 0 4px 36px rgba(200,83,106,0.7); }
+  }
+  .oath-btn:active { transform: scale(0.97); }
+
+  /* SUCCESS OVERLAY */
+  .success-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(42,26,31,0.85);
+    z-index: 100;
+    justify-content: center; align-items: center;
+    flex-direction: column;
+    animation: fadeIn 0.5s ease;
+  }
+  .success-overlay.show { display: flex; }
+  .success-emoji { font-size: 80px; animation: pop 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+  .success-msg {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; color: #fff;
+    margin: 20px 0 10px; text-align: center;
+    padding: 0 24px;
+  }
+  .success-sub {
+    font-size: 15px; color: rgba(255,255,255,0.7);
+    text-align: center; padding: 0 30px;
+    line-height: 1.6;
+  }
+  .success-next {
+    margin-top: 32px;
+    background: var(--gold);
+    color: var(--dark);
+    border: none; border-radius: 50px;
+    padding: 14px 40px;
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    cursor: pointer; transition: all 0.3s;
+    font-weight: 700;
+  }
+
+  /* ─── PAGE FINAL: CINEMATIC PROPOSAL ─── */
+  #page-final {
+    background: #0d0608;
+    justify-content: flex-start; align-items: center; text-align: center;
+    padding: 0;
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* STAR FIELD */
+  .stars-bg {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 20% 30%, rgba(200,83,106,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 70%, rgba(196,154,60,0.1) 0%, transparent 60%);
+  }
+
+  /* SCROLL TIMELINE */
+  .timeline-scroll {
+    width: 100%; max-width: 480px;
+    padding: 60px 24px 80px;
+    position: relative; z-index: 2;
+    overflow-y: auto;
+  }
+
+  /* CHAPTER TITLE */
+  .chapter-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: revealFade 1s ease 0.3s forwards;
+  }
+
+  /* MEMORY CARDS */
+  .mem-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 22px 20px;
+    margin-bottom: 20px;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .mem-card.visible { opacity: 1; transform: translateY(0); }
+  .mem-card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(180deg, var(--rose), var(--gold));
+    border-radius: 3px 0 0 3px;
+  }
+  .mem-icon { font-size: 28px; margin-bottom: 10px; display: block; }
+  .mem-year {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--gold); font-weight: 600; margin-bottom: 6px;
+  }
+  .mem-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px; color: #fff;
+    margin-bottom: 8px; line-height: 1.4;
+  }
+  .mem-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px; color: rgba(255,255,255,0.65);
+    line-height: 1.65;
+  }
+
+  /* DIVIDER */
+  .timeline-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 30px 0;
+    opacity: 0; animation: revealFade 1s ease 1.5s forwards;
+  }
+  .timeline-divider::before, .timeline-divider::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  }
+  .timeline-divider span { font-size: 20px; }
+
+  /* LETTER BLOCK */
+  .letter-block {
+    background: rgba(200,83,106,0.08);
+    border: 1px solid rgba(200,83,106,0.2);
+    border-radius: 18px;
+    padding: 24px 20px;
+    margin-bottom: 20px;
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .letter-block.visible { opacity: 1; transform: translateY(0); }
+  .letter-who {
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--rose-light); font-weight: 600; margin-bottom: 10px;
+  }
+  .letter-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 17px; line-height: 1.75;
+    color: rgba(255,255,255,0.85);
+  }
+
+  /* RING SCENE */
+  .ring-scene {
+    margin: 40px 0 30px;
+    opacity: 0; animation: revealFade 1.2s ease 0.5s forwards;
+  }
+  .ring-glow {
+    font-size: 80px;
+    display: block;
+    filter: drop-shadow(0 0 30px rgba(228,185,80,0.7));
+    animation: floatRing 3s ease-in-out infinite;
+  }
+  @keyframes floatRing {
+    0%, 100% { transform: translateY(0) rotate(-4deg) scale(1); }
+    50% { transform: translateY(-16px) rotate(4deg) scale(1.05); }
+  }
+
+  /* THE QUESTION */
+  .the-question {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 9vw, 44px);
+    color: #fff;
+    line-height: 1.25;
+    margin-bottom: 16px;
+    opacity: 0; animation: revealFade 1.2s ease 0.8s forwards;
+  }
+  .the-question em { color: var(--gold-light); font-style: italic; }
+  .sub-question {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 18px; color: rgba(255,255,255,0.65);
+    margin-bottom: 40px; line-height: 1.6;
+    opacity: 0; animation: revealFade 1.2s ease 1.1s forwards;
+  }
+
+  @keyframes revealFade {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .final-btns { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 300px; margin: 0 auto; }
+  .btn-yes {
+    background: linear-gradient(135deg, var(--gold), #a07820);
+    color: #fff;
+    border: none; border-radius: 50px;
+    padding: 18px; font-family: 'Playfair Display', serif;
+    font-size: 20px; font-style: italic;
+    cursor: pointer;
+    box-shadow: 0 6px 30px rgba(196,154,60,0.5);
+    animation: glowGold 2s ease-in-out infinite;
+    transition: transform 0.2s;
+  }
+  .btn-yes:active { transform: scale(0.97); }
+  @keyframes glowGold {
+    0%, 100% { box-shadow: 0 6px 30px rgba(196,154,60,0.4); }
+    50% { box-shadow: 0 6px 50px rgba(196,154,60,0.8); }
+  }
+  .btn-maybe {
+    background: transparent;
+    color: rgba(255,255,255,0.4);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 50px; padding: 14px;
+    font-size: 15px; cursor: pointer;
+    transition: all 0.3s;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* GENERIC BUTTON */
+  .btn-primary {
+    display: block; width: 100%; max-width: 320px;
+    background: linear-gradient(135deg, var(--rose), #a03050);
+    color: #fff; border: none; border-radius: 50px;
+    padding: 16px 24px;
+    font-family: 'Playfair Display', serif;
+    font-size: 17px; font-style: italic;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(200,83,106,0.35);
+    transition: all 0.3s; margin-top: 8px;
+  }
+  .btn-primary:active { transform: scale(0.97); }
+
+  /* CELEBRATION */
+  #celebration {
+    display: none;
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(26,13,18,0.95);
+    justify-content: center; align-items: center;
+    flex-direction: column; text-align: center;
+    padding: 40px;
+  }
+  #celebration.show { display: flex; animation: fadeIn 0.6s ease; }
+  .celeb-heart { font-size: 100px; animation: pulse 1s ease-in-out infinite; }
+  .celeb-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(30px, 9vw, 50px);
+    color: var(--gold-light);
+    margin: 20px 0 12px;
+    text-shadow: 0 0 30px rgba(228,185,80,0.5);
+  }
+  .celeb-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 20px; color: rgba(255,255,255,0.8);
+    max-width: 300px; line-height: 1.6;
+  }
+  .confetti-piece {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    animation: confettiFall linear infinite;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="petal-container" id="petals"></div>
+
+<!-- ─── INTRO ─── -->
+<div class="page active" id="page-intro">
+  <span class="heart-pulse">🌹</span>
+  <h1>Kübra,<br><em>Sana bir şey<br>anlatmak istiyorum…</em></h1>
+  <p>3 yıl önce seni sevmeye başladığımda, bu kadar derin bir yere kök salacağını bilmiyordum.<br><br>Ama önce seninle dürüst olmam gerekiyor.</p>
+  <button class="btn-primary" onclick="goTo('page-letter')">Dinlemek istiyorum →</button>
+</div>
+
+<!-- ─── LETTER ─── -->
+<div class="page" id="page-letter">
+  <div class="letter-wrap">
+    <div class="letter-date">2024 — Üç yıl sonra</div>
+    <div class="letter-body">
+      <p>Kübra,</p><br>
+      <p>3 yılda iyisiyle kötüsüyle çok şey yaşadık. Kırıldım, kırdım. Ama seni <strong>sevmekten hiç vazgeçmedim.</strong></p>
+      <div class="rose-divider">🌿 ❤️ 🌿</div>
+      <p>Seninle hayatımı kurmak istiyorum. Gerçekten istiyorum. Ama bunun için ikimizin de <strong>birbirine saygı duyduğu</strong>, sağlıklı bir zemin olması lazım.</p><br>
+      <p>Senden <strong>üç söz</strong> almam gerekiyor. Küçük değil bunlar — benim için <em>her şeyler.</em></p>
+    </div>
+    <div class="rose-divider">— ❧ —</div>
+    <button class="btn-primary" onclick="goTo('page-c1')" style="margin: 0 auto; display:block;">Sözlere geç →</button>
+  </div>
+</div>
+
+<!-- ─── COMMITMENT 1: SİGARA ─── -->
+<div class="page commit-page" id="page-c1">
+  <div class="step-indicator">
+    <div class="step-dot active" id="dot-1-1"></div>
+    <div class="step-dot" id="dot-1-2"></div>
+    <div class="step-dot" id="dot-1-3"></div>
+  </div>
+  <div class="commit-card" id="card-1">
+    <span class="commit-icon">🚭</span>
+    <h2 class="commit-title">Birinci Söz</h2>
+    <div class="commit-desc">
+      Bu söz senin sağlığın için. Ama aynı zamanda ikimizin geleceği için.
+    </div>
+    <div class="commit-quote">
+      "Seninle uzun, sağlıklı bir ömür geçirmek istiyorum. Sigarayı bırakmanı istiyorum — sadece benim için değil, <em>kendin için.</em>"
+    </div>
+
+    <div class="promise-box" id="pb-1-1" onclick="togglePb('pb-1-1', 1)">
+      <div class="cb-circle" id="cb-1-1"></div>
+      <div class="promise-text">Sigarayı bırakacağıma söz veriyorum</div>
+    </div>
+    <div class="promise-box" id="pb-1-2" onclick="togglePb('pb-1-2', 1)">
+      <div class="cb-circle" id="cb-1-2"></div>
+      <div class="promise-text">Bu sözümü yemin ederek veriyorum</div>
+    </div>
+
+    <button class="oath-btn" id="btn-1" onclick="completeStep(1)">Yemin ediyorum 🤍</button>
+  </div>
+</div>
+
+<!-- ─── COMMITMENT 2: SAYGI ─── -->
+<div class="page commit-page" id="page-c2">
+  <div class="step-indicator">
+    <div class="step-dot done" id="dot-2-1"></div>
+    <div class="step-dot active" id="dot-2-2"></div>
+    <div class="step-dot" id="dot-2-3"></div>
+  </div>
+  <div class="commit-card" id="card-2">
+    <span class="commit-icon">🕊️</span>
+    <h2 class="commit-title">İkinci Söz</h2>
+    <div class="commit-desc">
+      Sevgi tartışmayı dışlamaz. Ama tartışma asla hakarete dönüşmemeli.
+    </div>
+    <div class="commit-quote">
+      "Ne kadar sinirlenirsen sinirlen, ne kadar üzülürsen üzül — <em>bana saygısızlık yapmayacaksın, hakaret etmeyeceksin.</em> Bu çizgi aşılmaz."
+    </div>
+
+    <div class="promise-box" id="pb-2-1" onclick="togglePb('pb-2-1', 2)">
+      <div class="cb-circle" id="cb-2-1"></div>
+      <div class="promise-text">Hakaret ve saygısızlığı bırakacağıma söz veriyorum</div>
+    </div>
+    <div class="promise-box" id="pb-2-2" onclick="togglePb('pb-2-2', 2)">
+      <div class="cb-circle" id="cb-2-2"></div>
+      <div class="promise-text">Bu sözümü yemin ederek veriyorum</div>
+    </div>
+
+    <button class="oath-btn" id="btn-2" onclick="completeStep(2)">Yemin ediyorum 🤍</button>
+  </div>
+</div>
+
+<!-- ─── COMMITMENT 3: SAÇ ─── -->
+<div class="page commit-page" id="page-c3">
+  <div class="step-indicator">
+    <div class="step-dot done"></div>
+    <div class="step-dot done"></div>
+    <div class="step-dot active"></div>
+  </div>
+  <div class="commit-card" id="card-3">
+    <span class="commit-icon">✂️</span>
+    <h2 class="commit-title">Üçüncü Söz</h2>
+    <div class="commit-desc">
+      Bu küçük görünebilir. Ama benim için çok özel bir isteğim.
+    </div>
+    <div class="commit-quote">
+      "Saçını uzun uzatmanı istiyorum — uzun süre boyunca. Bu benim senden <em>özel</em> bir ricam."
+    </div>
+
+    <div class="promise-box" id="pb-3-1" onclick="togglePb('pb-3-1', 3)">
+      <div class="cb-circle" id="cb-3-1"></div>
+      <div class="promise-text">Saçımı uzun uzatacağıma söz veriyorum</div>
+    </div>
+    <div class="promise-box" id="pb-3-2" onclick="togglePb('pb-3-2', 3)">
+      <div class="cb-circle" id="cb-3-2"></div>
+      <div class="promise-text">Bu sözümü yemin ederek veriyorum</div>
+    </div>
+
+    <button class="oath-btn" id="btn-3" onclick="completeStep(3)">Yemin ediyorum 🤍</button>
+  </div>
+</div>
+
+<!-- ─── FINAL: CINEMATIC TIMELINE PROPOSAL ─── -->
+<div class="page" id="page-final">
+  <div class="stars-bg"></div>
+  <div class="timeline-scroll" id="timeline-scroll">
+
+    <div class="chapter-label">Kübra & Süleyman — Bizim Hikayemiz</div>
+
+    <!-- Memory 1 -->
+    <div class="mem-card" data-delay="0">
+      <span class="mem-icon">👀</span>
+      <div class="mem-year">Başlangıç</div>
+      <div class="mem-title">O Nişan Gecesi</div>
+      <div class="mem-text">Bir nişanda karşılaştık. Kapıdan çıkarken hiç huyun olmadığı halde bana döndün ve "Görüşürüz" dedin. O iki kelime her şeyi değiştirdi.</div>
+    </div>
+
+    <!-- Memory 2 -->
+    <div class="mem-card" data-delay="100">
+      <span class="mem-icon">🌉</span>
+      <div class="mem-year">İstanbul</div>
+      <div class="mem-title">Birlikte Fethettiğimiz Şehir</div>
+      <div class="mem-text">Boğaza baktık, koştuk, güldük. İstanbul'un sokaklarında senin yanındayken her yer evime dönüştü.</div>
+    </div>
+
+    <!-- Memory 3 -->
+    <div class="mem-card" data-delay="200">
+      <span class="mem-icon">🤬</span>
+      <div class="mem-year">Fırtınalar</div>
+      <div class="mem-title">Kavga Ettiğimizde Bile</div>
+      <div class="mem-text">"SÜLEEYYYYMAAAANNN!" diye bağırdığında, sinirlendiğinde — aslında ne kadar önem verdiğini görüyordum. Barışma anlarımız en güzel anlarımızdı.</div>
+    </div>
+
+    <!-- Memory 4 -->
+    <div class="mem-card" data-delay="300">
+      <span class="mem-icon">⛸️</span>
+      <div class="mem-year">Huzur</div>
+      <div class="mem-title">Düşe Kalka, El Ele</div>
+      <div class="mem-text">Hayatın her anında bir denge bulmaya çalıştık. Kaydığımızda bile birbirimizi tuttuk. Hep tutacağız.</div>
+    </div>
+
+    <!-- Memory 5 -->
+    <div class="mem-card" data-delay="400">
+      <span class="mem-icon">🌙</span>
+      <div class="mem-year">Günün Sonu</div>
+      <div class="mem-title">Omzuma Yaslandığında</div>
+      <div class="mem-text">Yorgun geceler, senin omzuma yaslanıp uyuklaman... O anlar için her şeye değerdi. Her şeye.</div>
+    </div>
+
+    <div class="timeline-divider"><span>💌</span></div>
+
+    <!-- His letter -->
+    <div class="letter-block" data-delay="100">
+      <div class="letter-who">Süleyman diyor ki</div>
+      <div class="letter-quote">"Senin içini çok net görüyorum — temiz ve nur yüzünü, ışıltını gözünde görüyorum. Sana aşkım, sevgilim, yavrum, bitanem diyorum... Seni yanımdan ayırmak istemiyorum."</div>
+    </div>
+
+    <!-- Her letter -->
+    <div class="letter-block" data-delay="200" style="background:rgba(196,154,60,0.07); border-color:rgba(196,154,60,0.2);">
+      <div class="letter-who" style="color:var(--gold-light)">Kübra bir gün dedi ki</div>
+      <div class="letter-quote">"Dokunduğun her yeri şifalandırıyorsun. Evim oluyorsun seninle."</div>
+    </div>
+
+    <!-- Future vision -->
+    <div class="letter-block" data-delay="300" style="background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.08);">
+      <div class="letter-who" style="color:rgba(255,255,255,0.5)">Öngörümüz</div>
+      <div class="letter-quote">"Dışarıda babalarıyla takılan kız bebekler görüyorum... Benimki daha güzel olacak. Çünkü senin küçüklük fotoğraflarını gördükçe — prensesimiz de sana benzeyecek." 👶🏻</div>
+    </div>
+
+    <div class="timeline-divider"><span>✨</span></div>
+
+    <!-- THE PROPOSAL -->
+    <div class="ring-scene">
+      <span class="ring-glow">💍</span>
+    </div>
+
+    <h2 class="the-question">Kübra,<br><em>Benimle evlenir misin?</em></h2>
+    <p class="sub-question">Üç sözünü aldım.<br>Kalbini zaten çok önceden almıştım.<br>Şimdi sana <em>kalbimin kırıklığını geri vermek</em> istiyorum.</p>
+
+    <div class="final-btns">
+      <button class="btn-yes" onclick="sayYes()">💛 Evet, evet, evet!</button>
+      <button class="btn-maybe" onclick="sayMaybe()">Biraz daha düşüneyim…</button>
+    </div>
+    <div style="height:40px;"></div>
+  </div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="success-overlay">
+  <div class="success-emoji" id="suc-emoji">✅</div>
+  <div class="success-msg" id="suc-msg">Söz verdin!</div>
+  <div class="success-sub" id="suc-sub">Bu adımı attığın için teşekkürler.</div>
+  <button class="success-next" id="suc-next" onclick="nextStep()">Devam →</button>
+</div>
+
+<!-- CELEBRATION -->
+<div id="celebration">
+  <div id="celeb-inner" style="position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; padding:40px 28px; text-align:center;">
+    <span class="celeb-heart">💍</span>
+    <div class="celeb-title">Evet! 🥂</div>
+    <p class="celeb-sub" style="margin-bottom:32px;">"Evim oluyorsun seninle."<br><br>Artık her şey yeni başlıyor.<br>Seninle her an ayrı bir mucize.</p>
+
+    <!-- Future vision card -->
+    <div style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-radius:18px; padding:20px; max-width:280px; margin-bottom:32px;">
+      <div style="font-size:40px; margin-bottom:10px;">👶🏻</div>
+      <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:16px; color:rgba(255,255,255,0.8); line-height:1.6;">"Prensesimiz sana benzeyecek..."</div>
+    </div>
+
+    <div style="font-family:'Playfair Display',serif; font-size:22px; color:var(--gold-light); margin-bottom:8px;">Kübra & Süleyman</div>
+    <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:15px; color:rgba(255,255,255,0.5);">Sonsuza kadar ❤️</div>
+  </div>
+</div>
+
+<script>
+  // State
+  let checks = { 1: [false, false], 2: [false, false], 3: [false, false] };
+  let currentStep = 0;
+  let maybeCount = 0;
+
+  // ── PETALS ──
+  const petalColors = ['#f2a0af','#c8536a','#e8c96e','#ffd6de','#ffb8c6'];
+  const pc = document.getElementById('petals');
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.style.cssText = `
+      left:${Math.random()*100}%;
+      background:${petalColors[Math.floor(Math.random()*petalColors.length)]};
+      width:${6+Math.random()*8}px;
+      height:${8+Math.random()*10}px;
+      animation-duration:${5+Math.random()*8}s;
+      animation-delay:${Math.random()*8}s;
+      opacity:0;
+    `;
+    pc.appendChild(p);
+  }
+
+  // ── NAVIGATION ──
+  function goTo(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const el = document.getElementById(id);
+    el.classList.add('active');
+    window.scrollTo(0, 0);
+    if (id === 'page-final') {
+      setTimeout(initFinalObserver, 200);
+    }
+  }
+
+  // ── CHECKBOX TOGGLE ──
+  function togglePb(id, step) {
+    const box = document.getElementById(id);
+    const num = parseInt(id.split('-')[2]) - 1;
+    checks[step][num] = !checks[step][num];
+    box.classList.toggle('checked', checks[step][num]);
+    const cb = document.getElementById('cb-' + id.split('pb-')[1].replace('-','_').split('_').join('-').replace('pb','cb'));
+    // simpler:
+    const cbId = 'cb-' + id.substring(3);
+    const cbEl = document.getElementById(cbId);
+    if (cbEl) cbEl.innerHTML = checks[step][num] ? '✓' : '';
+
+    const allDone = checks[step].every(v => v);
+    const btn = document.getElementById('btn-' + step);
+    btn.classList.toggle('ready', allDone);
+  }
+
+  // ── COMPLETE STEP ──
+  const stepMsgs = [
+    ['🚭', 'Birinci sözü verdin!', 'Sigarayı bırakmak kolay olmayabilir. Ama bu adım, kendine verdiğin en güzel hediyelerden biri.'],
+    ['🕊️', 'İkinci sözü verdin!', 'Saygı — en güçlü sevgi dili. Bu sözü aklında hep tut.'],
+    ['✂️', 'Üçüncü sözü de verdin!', 'Üç söz, üç temel taş. Şimdi sana önemli bir şey söylemek istiyorum…'],
+  ];
+
+  function completeStep(n) {
+    initAudio(); playSuccess();
+    currentStep = n;
+    const [emoji, msg, sub] = stepMsgs[n-1];
+    document.getElementById('suc-emoji').textContent = emoji;
+    document.getElementById('suc-msg').textContent = msg;
+    document.getElementById('suc-sub').textContent = sub;
+    document.getElementById('success-overlay').classList.add('show');
+
+    const card = document.getElementById('card-' + n);
+    if (card) card.classList.add('accepted');
+  }
+
+  function nextStep() {
+    document.getElementById('success-overlay').classList.remove('show');
+    if (currentStep === 1) goTo('page-c2');
+    else if (currentStep === 2) goTo('page-c3');
+    else goTo('page-final');
+  }
+
+  // ── AUDIO ──
+  let audioCtx;
+  function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  }
+  function playTone(freq, type, duration, vol = 0.08) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.start(); osc.stop(audioCtx.currentTime + duration);
+  }
+  function playSuccess() {
+    initAudio();
+    [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playTone(f, 'sine', 0.4, 0.12), i * 100));
+  }
+  function playChime() {
+    initAudio();
+    [880, 1100].forEach((f, i) => setTimeout(() => playTone(f, 'sine', 0.3, 0.08), i * 80));
+  }
+  function playFanfare() {
+    initAudio();
+    [523,659,784,1047,1319,1047,784,659,523].forEach((f,i) => setTimeout(() => playTone(f,'sine',0.25,0.13), i*80));
+  }
+
+  // ── SCROLL OBSERVER FOR FINAL PAGE ──
+  function initFinalObserver() {
+    const cards = document.querySelectorAll('.mem-card, .letter-block');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const delay = parseInt(e.target.dataset.delay || 0);
+          setTimeout(() => e.target.classList.add('visible'), delay);
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    cards.forEach(c => obs.observe(c));
+
+    // Spawn star particles
+    const starsEl = document.querySelector('.stars-bg');
+    if (!starsEl) return;
+    for (let i = 0; i < 60; i++) {
+      const s = document.createElement('div');
+      const size = Math.random() * 2 + 1;
+      s.style.cssText = `
+        position:absolute;
+        width:${size}px; height:${size}px;
+        background:rgba(255,255,255,${Math.random() * 0.5 + 0.1});
+        border-radius:50%;
+        left:${Math.random() * 100}%;
+        top:${Math.random() * 100}%;
+        animation: starTwinkle ${2 + Math.random() * 4}s ease-in-out ${Math.random() * 3}s infinite;
+      `;
+      starsEl.appendChild(s);
+    }
+  }
+
+  // Add star twinkle keyframe dynamically
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `@keyframes starTwinkle { 0%,100%{opacity:0.1} 50%{opacity:0.8} }`;
+  document.head.appendChild(styleEl);
+
+  // ── PROPOSAL ──
+  function sayYes() {
+    playFanfare();
+    spawnConfetti();
+    document.getElementById('celebration').classList.add('show');
+  }
+
+  function sayMaybe() {
+    maybeCount++;
+    const btn = document.querySelector('.btn-maybe');
+    const msgs = [
+      'Tamam, biraz daha düşün… 🌸',
+      'Hâlâ düşünüyor musun? 😅',
+      'Yani üç söz de verdin sakın "hayır" deme 😂',
+      'Tamam tamam dur dur… baktım çok uzun düşünüyorsun 😄',
+      '💍 → Sen → Evet. Bu kadar basit!',
+    ];
+    btn.textContent = msgs[Math.min(maybeCount - 1, msgs.length - 1)];
+    if (maybeCount >= 5) {
+      setTimeout(() => sayYes(), 1200);
+    }
+  }
+
+  // ── CONFETTI ──
+  function spawnConfetti() {
+    const colors = ['#c8536a','#e8c96e','#f2a0af','#fff','#ffd700'];
+    const cel = document.getElementById('celebration');
+    for (let i = 0; i < 60; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti-piece';
+      c.style.cssText = `
+        left:${Math.random()*100}vw;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        animation-duration:${2+Math.random()*3}s;
+        animation-delay:${Math.random()*2}s;
+        width:${6+Math.random()*8}px;
+        height:${6+Math.random()*8}px;
+        border-radius:${Math.random()>0.5?'50%':'2px'};
+      `;
+      cel.appendChild(c);
+    }
+  }
+</script>
+</body>
+</html>
